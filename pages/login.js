@@ -1,9 +1,24 @@
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Layout from '../components/Layout'
+import { signIn, useSession } from 'next-auth/react';
+import { getError } from '../utils/error';
+import { toast } from 'react-toastify';
 import {useForm} from 'react-hook-form'
+import { useRouter } from 'next/router';
+
 
 const LoginScreen = () => {
+
+    const { data: session } = useSession();
+    const router = useRouter();
+    const { redirect } = router.query;
+
+    useEffect(() => {
+        if (session?.user) {
+          router.push(redirect || '/');
+        }
+      }, [router, session, redirect]);
 
     const {
             handleSubmit,
@@ -11,8 +26,19 @@ const LoginScreen = () => {
             formState: { errors },
         } = useForm();
     
-    const submitHandler = ({ email, password }) => {
-        console.log(email, password);
+    const submitHandler = async ({ email, password }) => {
+        try {
+            const result = await signIn('credentials', {
+              redirect: false,
+              email,
+              password,
+            });
+            if (result.error) {
+              toast.error(result.error);
+            }
+          } catch (err) {
+            toast.error(getError(err));
+          }
     }
 
   return (
