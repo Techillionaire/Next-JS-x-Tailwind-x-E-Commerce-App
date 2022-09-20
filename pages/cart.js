@@ -4,9 +4,12 @@ import { Store } from '../utils/Store'
 import Link from 'next/link'
 import Image from 'next/image'
 import { RiDeleteBin2Line } from "react-icons/ri";
+import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic'
 
 
-const CartScreen = () => {
+function CartScreen(){
+    const router = useRouter()
     const {state, dispatch} = useContext(Store);
     const {
             cart: {cartItems},
@@ -14,6 +17,11 @@ const CartScreen = () => {
 
     const removeItem = (item) => {
         dispatch({ type: 'REMOVE_FROM_CART', payload: item });
+    }
+
+    const updateCart = (item, qty) => {
+        const quantity = Number(qty);
+        dispatch({ type: 'ADD_TO_CART', payload: { ...item, quantity } });
     }
 
   return (
@@ -56,11 +64,24 @@ const CartScreen = () => {
 
                                         </td>
 
-                                        <td className='p-5 text-right'>{item.quantity}</td>
+                                        <td className='p-5 text-right'>
+                                            <select
+                                                value={item.quantity}
+                                                onChange={(e) =>
+                                                updateCart(item, e.target.value)
+                                                }
+                                            >
+                                                {[...Array(item.countInStock).keys()].map((x) => (
+                                                <option key={x + 1} value={x + 1}>
+                                                    {x + 1}
+                                                </option>
+                                                ))}
+                                            </select>
+                                        </td>
                                         <td className='p-5 text-right'>${item.price}</td>
                                         <td className='p-5 text-center'>
                                             <button onClick={() => removeItem(item)}>
-                                                <i className='w-10 h-10'><RiDeleteBin2Line className='w-7 h-7'/></i>
+                                                <i className='w-10 h-10 text-red-600'><RiDeleteBin2Line className='w-7 h-7'/></i>
                                             </button>
                                         </td>
                                     </tr>
@@ -69,6 +90,20 @@ const CartScreen = () => {
                             
                         </table>
                     </div>
+                    <div className='card p-5'>
+                        <ul>
+                            <li>
+                                <div className='pb-3 text-xl'>
+                                    Subtotal ({cartItems.reduce((a,c) => a + c.quantity, 0)}) : $
+                                    {cartItems.reduce((a,c) => a + c.quantity * c.price, 0)}
+                                
+                                </div>
+                            </li>
+                            <li>
+                                <button onClick={() => router.push('/shipping')} className='primary-button w-full'>Check out</button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             )
         }
@@ -76,4 +111,4 @@ const CartScreen = () => {
   )
 }
 
-export default CartScreen
+export default dynamic(() => Promise.resolve(CartScreen), { ssr: false });
