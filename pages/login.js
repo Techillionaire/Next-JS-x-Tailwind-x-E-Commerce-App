@@ -16,7 +16,7 @@ const LoginScreen = () => {
     }
 
   return (
-    <Layout title={`login`}>
+    <Layout title={`Login`}>
         <form className='mx-auto max-w-screen-sm' onSubmit={handleSubmit(submitHandler)}>
             <h1 className='mb-4 text-xl font-bold text-center'>Login</h1>
             <div className='mb-4'>
