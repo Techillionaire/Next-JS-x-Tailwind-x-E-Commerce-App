@@ -38,7 +38,7 @@ const Layout = ({title, children}) => {
     
         <div className='flex min-h-screen flex-col justify-between'>
             <header>
-                <nav className='flex justify-between h-14 shadow-sm items-center px-4'>
+                <nav className='flex justify-between h-14 shadow-md items-center px-4'>
                     <Link href={`/`}>
                         <a className='text-lg font-bold'>SHOP-KORRECT</a>
                     </Link>
